@@ -31,6 +31,18 @@ async function submitAssignmentForm() {
   const existing_item = /\d$/.test(url)
   const formData = new FormData(assignment_form);
 
+  const form_buttons = document.querySelectorAll("#assignment-form .btn");
+  const form_fields = document.querySelectorAll("#assignment-form .form-control");
+
+  form_buttons.forEach((button) => {
+    button.setAttribute("disabled", "");
+  });
+  form_fields.forEach((field) => {
+    field.setAttribute("disabled", "");
+  });
+
+  await new Promise((resolve) => setTimeout(resolve, 5000));
+
   const response = await fetch(url, {
     method: "POST",
     body: formData
@@ -40,6 +52,13 @@ async function submitAssignmentForm() {
 
   const parser = new DOMParser();
   const doc = parser.parseFromString(htmlString, 'text/html');
+
+  form_buttons.forEach((button) => {
+    button.removeAttribute("disabled");
+  });
+  form_fields.forEach((field) => {
+    field.removeAttribute("disabled");
+  });
 
   if (response.ok) {
     const row = doc.querySelector(".assignment-html")
