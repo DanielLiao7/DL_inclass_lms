@@ -59,39 +59,43 @@ async function submitAssignmentForm() {
 
   await new Promise((resolve) => setTimeout(resolve, 5000));
 
-  const response = await fetch(url, {
-    method: "POST",
-    body: formData
-  });
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      body: formData
+    });
 
-  const htmlString = await response.text();
+    const htmlString = await response.text();
 
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(htmlString, 'text/html');
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlString, 'text/html');
 
-  enableForm();
+    enableForm();
 
-  if (response.ok) {
-    const row = doc.querySelector(".assignment-html")
+    if (response.ok) {
+      const row = doc.querySelector(".assignment-html")
 
-    if (existing_item) {
-      const id = row.id;
-      const old_row = document.getElementById(id);
-      old_row.replaceWith(row);
+      if (existing_item) {
+        const id = row.id;
+        const old_row = document.getElementById(id);
+        old_row.replaceWith(row);
+      } else {
+        const table = document.getElementById("assignments");
+        table.append(row);
+      };
+
+      const modal = bootstrap.Modal.getOrCreateInstance("#exampleModal");
+      modal.hide();
     } else {
-      const table = document.getElementById("assignments");
-      table.append(row);
+      const form = doc.querySelector("#assignment-form");
+
+      const modal_body = document.querySelector("#assignment-modal-content");
+      modal_body.innerHTML = null;
+      modal_body.append(form);
     };
-
-    const modal = bootstrap.Modal.getOrCreateInstance("#exampleModal");
-    modal.hide();
-  } else {
-    const form = doc.querySelector("#assignment-form");
-
-    const modal_body = document.querySelector("#assignment-modal-content");
-    modal_body.innerHTML = null;
-    modal_body.append(form);
-  };
+  } catch {
+    console.log("error");
+  }
 };
 
 // - Listeners
