@@ -24,13 +24,7 @@ async function clearAssignmentForm() {
   modal_body.innerHTML = null;
 }
 
-async function submitAssignmentForm() {
-
-  const assignment_form = document.querySelector("#assignment-form");
-  const url = assignment_form.getAttribute("action");
-  const existing_item = /\d$/.test(url)
-  const formData = new FormData(assignment_form);
-
+function disableForm() {
   const form_buttons = document.querySelectorAll("#assignment-form .btn");
   const form_fields = document.querySelectorAll("#assignment-form .form-control");
 
@@ -40,6 +34,28 @@ async function submitAssignmentForm() {
   form_fields.forEach((field) => {
     field.setAttribute("disabled", "");
   });
+}
+
+function enableForm() {
+  const form_buttons = document.querySelectorAll("#assignment-form .btn");
+  const form_fields = document.querySelectorAll("#assignment-form .form-control");
+
+  form_buttons.forEach((button) => {
+    button.removeAttribute("disabled", "");
+  });
+  form_fields.forEach((field) => {
+    field.removeAttribute("disabled", "");
+  });
+}
+
+async function submitAssignmentForm() {
+
+  const assignment_form = document.querySelector("#assignment-form");
+  const url = assignment_form.getAttribute("action");
+  const existing_item = /\d$/.test(url)
+  const formData = new FormData(assignment_form);
+
+  disableForm();
 
   await new Promise((resolve) => setTimeout(resolve, 5000));
 
@@ -53,12 +69,7 @@ async function submitAssignmentForm() {
   const parser = new DOMParser();
   const doc = parser.parseFromString(htmlString, 'text/html');
 
-  form_buttons.forEach((button) => {
-    button.removeAttribute("disabled");
-  });
-  form_fields.forEach((field) => {
-    field.removeAttribute("disabled");
-  });
+  enableForm();
 
   if (response.ok) {
     const row = doc.querySelector(".assignment-html")
